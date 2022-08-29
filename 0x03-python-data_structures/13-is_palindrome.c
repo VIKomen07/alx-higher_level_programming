@@ -1,60 +1,54 @@
 #include "lists.h"
-#include <stdlib.h>
 
-/**
- * get_len - get the length of a linkedlist
- * @head: head of the linkedlist
- * Return: the length of a linkedlist
- */
-
-int get_len(listint_t *head)
+void reverse_listint(listint_t **head)
 {
-	listint_t *tmp = head;
-	int len = 0;
+	listint_t *prev = NULL;
+	listint_t *current = *head;
+	listint_t *next = NULL;
 
-	while (tmp != NULL)
+	while (current)
 	{
-		len++;
-		tmp = tmp->next;
+		next = current->next;
+		current->next = prev;
+		prev = current;
+		current = next;
 	}
-	return (len);
+	*head = prev;
 }
-
-/**
- * is_palindrome - check if a linkedlist is a palindrome
- * @head: head of the linkedlist
- * Return: 0 if it is not a palindrome, 1 if it is a palindrome
- */
 
 int is_palindrome(listint_t **head)
 {
-	listint_t *tmp;
-	int *arr, len, i = 0, j = 0;
+	listint_t *slow = *head, *fast = *head, *temp = *head, *dup = NULL;
 
-	if (!head)
-		return (-1);
-	if (!(*head))
+	if (*head == NULL || (*head)->next == NULL)
 		return (1);
-	len = get_len(*head);
-	arr = malloc(sizeof(*arr) * len);
-	tmp = *head;
-	while (tmp != NULL)
+	while (1)
 	{
-		arr[i] = tmp->n;
-		i++;
-		tmp = tmp->next;
-	}
-	i -= 1;
-	while (i >= j)
-	{
-		if (arr[i] != arr[j])
+		fast = fast->next->next;
+		if (!fast)
 		{
-			free(arr);
-			return (0);
+			dup = slow->next;
+			break;
 		}
-		i--;
-		j++;
+		if (!fast->next)
+		{
+			dup = slow->next->next;
+			break;
+		}
+		slow = slow->next;
 	}
-	free(arr);
-	return (1);
+	reverse_listint(&dup);
+	while (dup && temp)
+	{
+		if (temp->n == dup->n)
+		{
+			dup = dup->next;
+			temp = temp->next;
+		}
+		else
+			return (0);
+	}
+	if (!dup)
+		return (1);
+	return (0);
 }
